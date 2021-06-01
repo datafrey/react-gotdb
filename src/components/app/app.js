@@ -25,6 +25,10 @@ const ToggleRandomChar = styled.button`
   border-radius: 5px;
 `;
 
+const WelcomePlaceholder = styled.h1`
+  color: #fff;
+`;
+
 export default class App extends Component {
 
   gotService = new GotService();
@@ -66,7 +70,7 @@ export default class App extends Component {
                 </ToggleRandomChar>
               </Col>
             </Row>
-            <Route path="/" exact component={ () => <h1>Welcome to GOT BD</h1> } />
+            <Route path="/" exact component={ () => <WelcomePlaceholder>Welcome to GOT BD</WelcomePlaceholder> } />
             <Route path="/characters" component={ CharacterPage } />
             <Route path="/houses" component={ HousePage } />
             <Route path="/books" exact component={ BookPage } />
