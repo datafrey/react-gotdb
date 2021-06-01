@@ -1,34 +1,84 @@
-import React from 'react';
-import {Col, Row, Container} from 'reactstrap';
+import React, { Component } from 'react';
+import { Col, Row, Container } from 'reactstrap';
+import styled from 'styled-components';
+import { BrowserRouter as Router, Route } from 'react-router-dom';
+
 import Header from '../header';
 import RandomChar from '../randomChar';
-import ItemList from '../itemList';
-import CharDetails from '../charDetails';
+import CharacterPage from '../pages/characterPage';
+import HousePage from '../pages/housePage';
+import BookPage from '../pages/bookPage';
+import BooksItem from '../pages/booksItem';
+import ErrorMessage from '../errorMessage';
+import GotService from '../../services/gotService';
 
+import './app.css';
 
-const App = () => {
+const ToggleRandomChar = styled.button`
+  margin-bottom: 40px;
+  width: 300px;
+  height: 50px;
+  background: #225;
+  color: #fff;
+  border: none;
+  text-size: 18px;
+  border-radius: 5px;
+`;
+
+export default class App extends Component {
+
+  gotService = new GotService();
+
+  state = {
+    randomCharIsShown: true,
+    error: false
+  }
+
+  componentDidCatch() {
+    this.setState({ error: true });
+  }
+
+  onToggleRandomChar = (e) => {
+    e.preventDefault();
+    this.setState({ randomCharIsShown: !this.state.randomCharIsShown });
+  }
+
+	render() {
+    const { randomCharIsShown } = this.state;
+    const randomCharElement = randomCharIsShown ? <RandomChar /> : null;
+
+    if (this.state.error) {
+      return <ErrorMessage />;
+    }
+    
     return (
-        <> 
-            <Container>
-                <Header />
-            </Container>
-            <Container>
-                <Row>
-                    <Col lg={{size: 5, offset: 0}}>
-                        <RandomChar/>
-                    </Col>
-                </Row>
-                <Row>
-                    <Col md='6'>
-                        <ItemList />
-                    </Col>
-                    <Col md='6'>
-                        <CharDetails />
-                    </Col>
-                </Row>
-            </Container>
-        </>
+      <Router>
+        <div className="app"> 
+          <Container>
+            <Header />
+          </Container>
+          <Container>
+            <Row>
+              <Col lg={ { size: 5, offset: 0 } }>
+                { randomCharElement }
+                <ToggleRandomChar onClick={ this.onToggleRandomChar }>
+                  Toggle random char
+                </ToggleRandomChar>
+              </Col>
+            </Row>
+            <Route path="/" exact component={ () => <h1>Welcome to GOT BD</h1> } />
+            <Route path="/characters" component={ CharacterPage } />
+            <Route path="/houses" component={ HousePage } />
+            <Route path="/books" exact component={ BookPage } />
+            <Route path="/books/:id" render={
+              ({ match }) => {
+                const { id } = match.params;
+                return <BooksItem bookId={ id } />
+              }
+            } />
+          </Container>
+        </div>
+      </Router>
     );
-};
-
-export default App;
+  }
+}
